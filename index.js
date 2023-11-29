@@ -122,6 +122,15 @@ const client = new MongoClient(uri, {
       })
 
 
+      //delete user 
+      app.delete('/users/:id',  async (req, res) => {
+        const id = req.params.id
+        const query = { _id: new ObjectId(id) }
+        const result = await usersCollection.deleteOne(query);
+        res.send(result);
+      })
+
+
       app.get ('/Pets', async (req,res) => {
         const pets = req.body
         const result = await petsCollection.find(pets).toArray();
@@ -160,11 +169,46 @@ const client = new MongoClient(uri, {
       res.send(result);
     })
 
+    app.get('/getPets/:id', async (req, res) => {
+      const petsId = req.params.id;
+      const query = { _id: new ObjectId(petsId) };
+      const result = await userPetCollection.findOne(query)
+      res.send(result);
+  })
+
+  app.patch ('/getPets/:id' , async (req , res) => {
+  const pets = req.body ;
+  const id = req.params.id;
+  const filter = {_id: new ObjectId(id) }
+const updatedDoc = {
+  $set:{
+    name:pets.name,
+    category:pets.category,
+    age:pets.age,
+    image:pets.image,
+    location:pets.location,
+    date:pets.date,
+    shortDescription: pets.shortDescription,
+    longDescription:pets.longDescription
+  }
+}
+
+const result = await userPetCollection.updateOne(filter, updatedDoc)
+res.send (result)
+  })
+
+
+    //delete pets from dashboard
+    app.delete('/pets/:id', async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) }
+      const result = await userPetCollection.deleteOne(query);
+      res.send(result);
+    })
+
     
-      await client.db('admin').command({ ping: 1 })
-      console.log(
-        'Pinged your deployment. You successfully connected to MongoDB!'
-      )
+      await client.db('admin').command({ ping: 1 }) // TODO: comment this line before deploy
+      console.log( 'Pinged your deployment. You successfully connected to MongoDB!')
     } finally {
       
       // await client.close();
