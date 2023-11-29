@@ -51,6 +51,7 @@ const client = new MongoClient(uri, {
     const petsCollection = client.db('A12db').collection('allPets')
     const allDonationCollection = client.db('A12db').collection('donation')
     const userPetCollection = client.db('A12db').collection('usersPet')
+    const singleDonationCollection = client.db('A12db').collection('singleDonation')
 
 
   async function run() {
@@ -157,12 +158,27 @@ const client = new MongoClient(uri, {
     })
 
 
+    //Single Donation
+
+    app.post('/singleDonation',  async (req, res) => {
+      const oneDonation = req.body
+      const result = await singleDonationCollection.insertOne(oneDonation)
+      res.send(result)
+    })
+
+ app.get ('/singleDonation', async (req,res) => {
+        const oneDonation = req.body
+        const result = await  singleDonationCollection.find(oneDonation).toArray();
+        res.send(result);
+      })
+
+
     app.post('/addPets',  async (req, res) => {
       const pet = req.body
       const result = await userPetCollection.insertOne(pet)
       res.send(result)
     })
-
+   
     app.get ('/getPets', async (req,res) => {
       const pets = req.body
       const result = await userPetCollection.find(pets).toArray();
