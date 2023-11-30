@@ -243,7 +243,34 @@ res.send (result)
       res.send(result);
     })
 
-   
+
+    app.get('/campaign/:id', async (req, res) => {
+      const campaignId = req.params.id;
+      const query = { _id: new ObjectId(campaignId) };
+      const result = await campaignCollection.findOne(query)
+      res.send(result);
+  })
+
+
+
+    app.patch('/campaign/:id' , async (req , res) => {
+      const campaign = req.body ;
+      const id = req.params.id;
+      const filter = {_id: new ObjectId(id) }
+    const updatedDoc = {
+      $set:{
+        name:campaign.name,
+        image:campaign.image,
+        amount:campaign.amount,
+        date:campaign.date,
+        shortDescription: campaign.shortDescription,
+        longDescription:campaign.longDescription
+      }
+    }
+    
+    const result = await campaignCollection.updateOne(filter, updatedDoc)
+    res.send (result)
+      })
 
 
 
