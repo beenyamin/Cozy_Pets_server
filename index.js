@@ -52,6 +52,7 @@ const client = new MongoClient(uri, {
     const allDonationCollection = client.db('A12db').collection('donation')
     const userPetCollection = client.db('A12db').collection('usersPet')
     const singleDonationCollection = client.db('A12db').collection('singleDonation')
+    const campaignCollection = client.db('A12db').collection('campaign')
 
 
   async function run() {
@@ -134,7 +135,15 @@ const client = new MongoClient(uri, {
 
       app.get ('/Pets', async (req,res) => {
         const pets = req.body
-        const result = await petsCollection.find(pets).toArray();
+        const filter = req.body;
+        console.log(filter);
+        const query = {
+          name:{$regex: filter.search}
+        };
+
+
+        const cursor = petsCollection.find(pets, query)
+        const result = await cursor.toArray();
         res.send(result);
       })
 
@@ -221,6 +230,25 @@ res.send (result)
       const result = await userPetCollection.deleteOne(query);
       res.send(result);
     })
+ 
+    app.post('/addCampaign',  async (req, res) => {
+      const createCampaign = req.body
+      const result = await campaignCollection.insertOne(createCampaign)
+      res.send(result)
+    })
+  
+    app.get ('/campaign', async (req,res) => {
+      const getCampaign = req.body
+      const result = await campaignCollection.find(getCampaign).toArray();
+      res.send(result);
+    })
+
+   
+
+
+
+
+
 
     
       await client.db('admin').command({ ping: 1 }) // TODO: comment this line before deploy
